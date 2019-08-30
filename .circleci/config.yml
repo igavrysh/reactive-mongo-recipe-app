@@ -23,7 +23,7 @@ jobs:
       - run:
           name: Setup Env Variables
           command: |
-            echo "export CODECOV_TOKEN='507c8a13-74d5-4d88-b36e-c490bd503ab2'" >> $BASH_ENV
+            echo "export CODECOV_TOKEN='aaabdc2a-4453-4f9d-b483-1d4507c0d071'" >> $BASH_ENV
 
       # Download and cache dependencies
       - restore_cache:
