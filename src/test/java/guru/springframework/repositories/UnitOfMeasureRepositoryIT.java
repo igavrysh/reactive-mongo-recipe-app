@@ -40,8 +40,7 @@ public class UnitOfMeasureRepositoryIT {
         RecipeBootstrap recipeBootstrap = new RecipeBootstrap(
                 categoryRepository,
                 recipeRepository,
-                unitOfMeasureRepository,
-                reactiveRepository);
+                unitOfMeasureRepository);
         recipeBootstrap.onApplicationEvent(null);
     }
 
