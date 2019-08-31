@@ -41,12 +41,9 @@ public class IngredientServiceImpl implements IngredientService {
     public Mono<IngredientCommand> findByRecipeIdAndIngredientId(String recipeId, String ingredientId) {
         return recipeReactiveRepository
                 .findById(recipeId)
-                .map(recipe -> recipe.getIngredients()
-                        .stream()
-                        .filter(ingredient -> ingredient.getId().equalsIgnoreCase(ingredientId))
-                        .findFirst())
-                .filter(Optional::isPresent)
-                .map(Optional::get)
+                .flatMapIterable(Recipe::getIngredients)
+                .filter(ingredient -> ingredient.getId().equalsIgnoreCase(ingredientId))
+                .single()
                 .map(ingredient -> {
                     IngredientCommand command = ingredientToIngredientCommand.convert(ingredient);
                     command.setRecipeId(recipeId);
@@ -56,8 +53,7 @@ public class IngredientServiceImpl implements IngredientService {
 
     @Override
     public Mono<IngredientCommand> saveIngredientCommand(IngredientCommand command) {
-        /*
-        Optional<Recipe> recipeOptional = recipeRepository.findById(command.getRecipeId());
+        Optional<Recipe> recipeOptional = recipeReactiveRepository.findById(command.getRecipeId()).blockOptional();
 
         if (!recipeOptional.isPresent()) {
             // todo toss error if not found
@@ -91,7 +87,7 @@ public class IngredientServiceImpl implements IngredientService {
             recipe.addIngredient(ingredient);
         }
 
-        Recipe savedRecipe = recipeRepository.save(recipe);
+        Recipe savedRecipe = recipeReactiveRepository.save(recipe).block();
 
         Optional<Ingredient> savedIngredientOptional = savedRecipe
                 .getIngredients()
@@ -116,22 +112,15 @@ public class IngredientServiceImpl implements IngredientService {
         ingredientCommand.setRecipeId(recipe.getId());
 
         return Mono.just(ingredientCommand);
-
-         */
-
-        return Mono.empty();
     }
 
     @Override
     public Mono<Void> deleteById(String recipeId, String idToDelete) {
-        /*
         log.debug("Deleting ingredient: " + recipeId + ":" + idToDelete);
 
-        Recipe recipeReactive = recipeReactiveRepository.findById(recipeId).block();
-        Recipe recipe recip
+        Recipe recipe = recipeReactiveRepository.findById(recipeId).block();
 
-        if (recipeOptional.isPresent()) {
-            Recipe recipe = recipeOptional.get();
+        if (recipe != null) {
             log.debug("found recipe");
 
             Optional<Ingredient> ingredientOptional = recipe
@@ -143,16 +132,12 @@ public class IngredientServiceImpl implements IngredientService {
             if (ingredientOptional.isPresent()) {
                 log.debug("found Ingredient");
                 Ingredient ingredientToDelete = ingredientOptional.get();
-                recipe.getIngredients().remove(ingredientOptional.get());
-                recipeRepository.save(recipe);
+                recipe.getIngredients().remove(ingredientToDelete);
+                recipeReactiveRepository.save(recipe).block();
             }
         } else {
             log.debug("Recipe Id Not found. Id:" + recipeId);
         }
-
-        return Mono.empty();
-        */
-
 
         return Mono.empty();
     }
