@@ -10,6 +10,7 @@ import guru.springframework.domain.Recipe;
 import guru.springframework.repositories.IngredientRepository;
 import guru.springframework.repositories.RecipeRepository;
 import guru.springframework.repositories.UnitOfMeasureRepository;
+import guru.springframework.repositories.reactive.UnitOfMeasureReactiveRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -28,7 +29,7 @@ public class IngredientServiceImplTest {
     private final IngredientCommandToIngredient ingredientCommandToIngredient;
 
     @Mock
-    UnitOfMeasureRepository unitOfMeasureRepository;
+    UnitOfMeasureReactiveRepository unitOfMeasureReactiveRepository;
 
     @Mock
     RecipeRepository recipeRepository;
@@ -51,7 +52,7 @@ public class IngredientServiceImplTest {
                 ingredientToIngredientCommand,
                 ingredientCommandToIngredient,
                 recipeRepository,
-                unitOfMeasureRepository);
+                unitOfMeasureReactiveRepository);
     }
 
     @Test
@@ -81,7 +82,9 @@ public class IngredientServiceImplTest {
         when(recipeRepository.findById(anyString())).thenReturn(recipeOptional);
 
         // then
-        IngredientCommand ingredientCommand = ingredientService.findByRecipeIdAndIngredientId("1", "2");
+        IngredientCommand ingredientCommand = ingredientService
+                .findByRecipeIdAndIngredientId("1", "2")
+                .block();
 
         // when
         assertEquals("2", ingredientCommand.getId());
@@ -106,7 +109,9 @@ public class IngredientServiceImplTest {
         when(recipeRepository.save(any())).thenReturn(savedRecipe);
 
         // when
-        IngredientCommand savedCommand = ingredientService.saveIngredientCommand(command);
+        IngredientCommand savedCommand = ingredientService
+                .saveIngredientCommand(command)
+                .block();
 
         // then verify
         assertEquals("3", savedCommand.getId());

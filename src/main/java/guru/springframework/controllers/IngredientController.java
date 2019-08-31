@@ -40,7 +40,7 @@ public class IngredientController {
 
     @GetMapping("/recipe/{recipeId}/ingredient/{id}/show")
     public String showRecipeIngredient(@PathVariable String recipeId, @PathVariable String id, Model model) {
-        IngredientCommand ingredientCommand = ingredientService.findByRecipeIdAndIngredientId(recipeId, id);
+        IngredientCommand ingredientCommand = ingredientService.findByRecipeIdAndIngredientId(recipeId, id).block();
         model.addAttribute("ingredient", ingredientCommand);
         return "recipe/ingredient/show";
     }
@@ -75,7 +75,7 @@ public class IngredientController {
 
     @PostMapping("recipe/{recipeId}/ingredient")
     public String saveOrUpdate(@ModelAttribute IngredientCommand ingredientCommand) {
-        IngredientCommand savedCommand = ingredientService.saveIngredientCommand(ingredientCommand);
+        IngredientCommand savedCommand = ingredientService.saveIngredientCommand(ingredientCommand).block();
 
         log.debug("saved receipe id: " + savedCommand.getRecipeId());
         log.debug("saved ingredient id: " + savedCommand.getId());
