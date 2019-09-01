@@ -9,7 +9,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
 
 import javax.validation.Valid;
 
@@ -27,7 +26,7 @@ public class RecipeController {
 
     @GetMapping("/recipe/{id}/show")
     public String showById(@PathVariable String id, Model model) {
-        model.addAttribute("recipe", recipeService.findById(id).block());
+        model.addAttribute("recipe", recipeService.findById(id));
         return "recipe/show";
     }
 
@@ -39,8 +38,7 @@ public class RecipeController {
 
     @GetMapping("recipe/{id}/update")
     public String updateRecipe(@PathVariable String id, Model model) {
-        RecipeCommand recipe = recipeService.findCommandById(id).block();
-        model.addAttribute("recipe", recipe);
+        model.addAttribute("recipe", recipeService.findCommandById(id));
         return RECIPE_RECRECIPEFORM_URL;
     }
 
@@ -68,6 +66,7 @@ public class RecipeController {
         return "redirect:/";
     }
 
+    /*
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(NotFoundException.class)
     public ModelAndView handleNotFound(Exception exception) {
@@ -82,4 +81,5 @@ public class RecipeController {
 
         return modelAndView;
     }
+    */
 }
