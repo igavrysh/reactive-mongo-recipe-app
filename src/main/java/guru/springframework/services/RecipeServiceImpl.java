@@ -44,42 +44,32 @@ public class RecipeServiceImpl implements RecipeService {
 
     @Override
     public Mono<Recipe> findById(String id) {
-        Recipe recipe = recipeReactiveRepository.findById(id).block();
-
-        if (recipe == null) {
-            throw new NotFoundException("Recipe Not Found. For ID Value: " + id.toString());
-        }
-
-        return Mono.just(recipe);
+        return recipeReactiveRepository.findById(id);
     }
 
     @Override
-    @Transactional
     public Mono<RecipeCommand> findCommandById(String id) {
-        return findById(id).map(recipeToRecipeCommand::convert);
+        return findById(id).map(recipe -> {
+            RecipeCommand recipeCommand = recipeToRecipeCommand.convert(recipe);
+
+            recipeCommand.getIngredients().forEach(rc -> {
+                rc.setRecipeId(recipeCommand.getId());
+            });
+
+            return recipeCommand;
+        });
     }
 
     @Override
-    @Transactional
     public Mono<RecipeCommand> saveRecipeCommand(RecipeCommand command) {
-        Recipe detachedRecipe = recipeCommandToRecipe.convert(command);
-
-        Recipe savedRecipe = recipeReactiveRepository.save(detachedRecipe).block();
-        log.debug("Saved RecipeId: " + savedRecipe.getId());
-        return Mono.just(recipeToRecipeCommand.convert(savedRecipe));
+        return recipeReactiveRepository
+                .save(recipeCommandToRecipe.convert(command))
+                .map(recipeToRecipeCommand::convert);
     }
 
     @Override
     public Mono<Void> deleteById(String id) {
-        log.debug("Deleting Recipe, recipeId: " + id);
-
-        //Recipe recipe = recipeReactiveRepository.findById(id).block();
-
-        //if (recipe == null) {
-        //    log.debug("RecipeId: " + id + " not found");
-       // } else {
-            recipeReactiveRepository.deleteById(id).block();
-       // }
+        recipeReactiveRepository.deleteById(id).block();
 
         return Mono.empty();
     }

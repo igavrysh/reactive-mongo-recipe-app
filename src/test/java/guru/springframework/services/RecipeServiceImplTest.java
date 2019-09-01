@@ -58,13 +58,6 @@ public class RecipeServiceImplTest {
         verify(recipeReactiveRepository, never()).findAll();
     }
 
-    @Test(expected = NotFoundException.class)
-    public void getRecipeByIdTestNotFound() throws Exception {
-        when(recipeReactiveRepository.findById(anyString())).thenReturn(Mono.empty());
-
-        Recipe recipeReturned = recipeService.findById("1").block();
-    }
-
     @Test
     public void getRecipeCommandByIdTest() throws Exception {
         Recipe recipe = new Recipe();
@@ -104,6 +97,8 @@ public class RecipeServiceImplTest {
     public void testDeleteById() throws Exception {
         // given
         String idToDelete = "2";
+
+        when(recipeReactiveRepository.deleteById(anyString())).thenReturn(Mono.empty());
 
         // when
         recipeService.deleteById(idToDelete).block();
