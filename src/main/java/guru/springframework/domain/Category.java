@@ -17,7 +17,6 @@ public class Category {
 
     private String description;
 
-    @DBRef
     private Set<Recipe> recipes;
 
 }

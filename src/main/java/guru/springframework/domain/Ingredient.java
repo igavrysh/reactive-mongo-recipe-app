@@ -18,7 +18,6 @@ public class Ingredient {
 
     private BigDecimal amount;
 
-    @DBRef
     private UnitOfMeasure uom;
 
     public Ingredient() {
