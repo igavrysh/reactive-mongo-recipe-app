@@ -84,7 +84,8 @@ public class IngredientController {
 
     @PostMapping("recipe/{recipeId}/ingredient")
     public String saveOrUpdate(@ModelAttribute("ingredient") IngredientCommand ingredientCommand,
-                               @PathVariable String recipeId) {
+                               @PathVariable String recipeId,
+                               Model model) {
 
         webDataBinder.validate();
         BindingResult bindingResult = webDataBinder.getBindingResult();
@@ -93,6 +94,8 @@ public class IngredientController {
             bindingResult.getAllErrors().forEach(objectError -> {
                 log.debug(objectError.toString());
             });
+
+            model.addAttribute("uomList", unitOfMeasureService.listAllUoms());
 
             return "recipe/ingredient/ingredientform";
         }
