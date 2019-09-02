@@ -10,6 +10,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
+import org.thymeleaf.exceptions.TemplateInputException;
 
 import javax.validation.Valid;
 
@@ -78,20 +79,17 @@ public class RecipeController {
         return "redirect:/";
     }
 
-    /*
+
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    @ExceptionHandler(NotFoundException.class)
-    public ModelAndView handleNotFound(Exception exception) {
+    @ExceptionHandler({NotFoundException.class, TemplateInputException.class})
+    public String handleNotFound(Exception exception, Model model) {
 
         log.error("Handling not found exception");
         log.error(exception.getMessage());
 
-        ModelAndView modelAndView = new ModelAndView();
+        model.addAttribute("exception", exception);
 
-        modelAndView.setViewName("404error");
-        modelAndView.addObject("exception", exception);
-
-        return modelAndView;
+        return "404error";
     }
-    */
+
 }
